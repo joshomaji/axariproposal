@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Axari TowerLink — Platform Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-pale: #F5E9C8;
+    --obsidian: #0D0D0E;
+    --charcoal: #1A1A1C;
+    --slate: #252528;
+    --mid: #3A3A3F;
+    --muted: #7A7A85;
+    --silver: #B8B8C2;
+    --cream: #F8F5EE;
+    --white: #FFFFFF;
+    --danger: #E05C5C;
+    --success: #5CB88A;
+    --accent-blue: #4A90D9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ── A4 PAGE SETUP ── */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html {
+    font-size: 12px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--obsidian);
+    line-height: 1.6;
+    font-size: 13px;
+    width: 210mm;
+    margin: 0 auto;
+  }
+
+  @media print {
+    html, body { width: 210mm; margin: 0; }
+    .cover { min-height: 297mm; }
+  }
+
+  /* ── COVER PAGE ── */
+  .cover {
+    background: #FFFDF7;
+    min-height: 100vh;
+    border-top: 6px solid var(--gold);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+
+  .cover-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.12) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .cover-glow {
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    pointer-events: none;
+  }
+
+  .cover-glow-2 {
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(74,144,217,0.08) 0%, transparent 70%);
+    bottom: -100px; left: -100px;
+    pointer-events: none;
+  }
+
+  .cover-header {
+    position: relative; z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 40px;
+    border-bottom: 1px solid rgba(201,168,76,0.4);
+  }
+
+  .cover-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .cover-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: #6B6540;
+    text-transform: uppercase;
+    border: 1px solid rgba(201,168,76,0.5);
+    padding: 6px 14px;
+    border-radius: 2px;
+  }
+
+  .cover-body {
+    position: relative; z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 40px;
+  }
+
+  .cover-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .cover-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--gold);
+  }
+
+  .cover-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5.5vw, 60px);
+    font-weight: 800;
+    color: var(--obsidian);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .cover-title span {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .cover-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(15px, 2vw, 20px);
+    font-weight: 400;
+    font-style: italic;
+    color: #7A6E50;
+    margin-bottom: 28px;
+  }
+
+  .cover-desc {
+    max-width: 480px;
+    color: #444;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+    border-left: 2px solid var(--gold);
+    padding-left: 20px;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  .cover-meta-item label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: #8A7D55;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .cover-meta-item span {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+  }
+
+  .cover-footer {
+    position: relative; z-index: 2;
+    padding: 18px 40px;
+    border-top: 1px solid rgba(201,168,76,0.35);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cover-footer-left {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #7A6E50;
+  }
+
+  .cover-tower-visual {
+    position: absolute;
+    right: 64px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    opacity: 0.12;
+  }
+
+  .tower-bars {
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+    height: 400px;
+  }
+
+  .tower-bar {
+    width: 14px;
+    background: linear-gradient(to top, var(--gold), transparent);
+    border-radius: 2px 2px 0 0;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .page {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 48px 40px;
+  }
+
+  @media (max-width: 700px) {
+    .page { padding: 32px 20px; }
+    .cover-header, .cover-body, .cover-footer { padding-left: 24px; padding-right: 24px; }
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-tag::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold-pale), transparent);
+    max-width: 80px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 3.5vw, 32px);
+    font-weight: 700;
+    color: var(--obsidian);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .section-intro {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.75;
+    max-width: 100%;
+    margin-bottom: 32px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    margin: 40px 0;
+  }
+
+  .divider-gold {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    margin: 40px 0;
+  }
+
+  /* ── DARK SECTION ── */
+  .dark-section {
+    background: #F4F1E8;
+    color: var(--obsidian);
+    margin: 0;
+    padding: 48px 0;
+    border-top: 2px solid rgba(201,168,76,0.3);
+    border-bottom: 2px solid rgba(201,168,76,0.3);
+  }
+
+  .dark-section .section-title { color: var(--obsidian); }
+  .dark-section .section-intro { color: #444; }
+
+  /* ── PROBLEM CARDS ── */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 56px;
+  }
+
+  .problem-card {
+    background: var(--white);
+    border: 1px solid #E8E4DA;
+    border-radius: 4px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .problem-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  }
+
+  .problem-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--danger);
+  }
+
+  .problem-card .p-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--danger);
+    margin-bottom: 12px;
+  }
+
+  .problem-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--obsidian);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .problem-card p {
+    font-size: 13.5px;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  .problem-icon {
+    font-size: 24px;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  /* ── SOLUTION CARDS ── */
+  .solution-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 56px;
+  }
+
+  .solution-card {
+    background: var(--white);
+    border: 1px solid #E0D9C5;
+    border-radius: 4px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    color: var(--obsidian);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .solution-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+  }
+
+  .solution-card .s-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .solution-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--obsidian);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .solution-card p {
+    font-size: 13.5px;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  /* ── MODULE CARDS ── */
+  .module-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 56px;
+  }
+
+  .module-card {
+    background: var(--white);
+    border: 1px solid #E8E4DA;
+    border-radius: 4px;
+    padding: 32px 36px;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 640px) {
+    .module-card { grid-template-columns: 1fr; }
+  }
+
+  .module-left {}
+
+  .module-icon-wrap {
+    width: 48px; height: 48px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin-bottom: 14px;
+    background: var(--gold-pale);
+    border: 1px solid rgba(201,168,76,0.3);
+  }
+
+  .module-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--obsidian);
+    margin-bottom: 4px;
+  }
+
+  .module-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .module-right {}
+
+  .module-desc {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  .feature-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill {
+    font-size: 12px;
+    color: var(--obsidian);
+    background: var(--gold-pale);
+    border: 1px solid rgba(201,168,76,0.35);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  /* ── REVENUE TABLE ── */
+  .revenue-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-bottom: 48px;
+  }
+
+  .revenue-table thead {
+    background: #3D3010;
+    color: var(--white);
+  }
+
+  .revenue-table thead th {
+    padding: 14px 18px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .revenue-table tbody tr {
+    border-bottom: 1px solid #EEE;
+    transition: background 0.15s;
+  }
+
+  .revenue-table tbody tr:hover {
+    background: var(--gold-pale);
+  }
+
+  .revenue-table tbody td {
+    padding: 14px 18px;
+    color: var(--obsidian);
+    vertical-align: top;
+  }
+
+  .revenue-table tbody td:first-child {
+    font-weight: 600;
+    color: var(--obsidian);
+  }
+
+  .revenue-table tbody td:last-child {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--success);
+    font-weight: 500;
+  }
+
+  .revenue-table tfoot td {
+    background: #3D3010;
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 16px 18px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── STAT BOXES ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+
+  .stat-box {
+    background: var(--white);
+    border: 1px solid #E8E4DA;
+    border-radius: 4px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  .stat-box .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--gold);
+    display: block;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .stat-box .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── QUOTE BLOCK ── */
+  .quote-block {
+    background: #FDF6E3;
+    border-left: 4px solid var(--gold);
+    padding: 28px 32px;
+    border-radius: 0 4px 4px 0;
+    margin: 40px 0;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-left: 4px solid var(--gold);
+  }
+
+  .quote-block p {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: #5A4A20;
+    line-height: 1.7;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 48px;
+    font-size: 14px;
+  }
+
+  .compare-table th {
+    background: #6B5E3A;
+    color: var(--white);
+    padding: 12px 18px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  .compare-table th:first-child { background: #3D3010; }
+  .compare-table th.bad { background: #C0392B; color: #FFF; }
+  .compare-table th.good { background: #1E7A4A; color: #FFF; }
+
+  .compare-table td {
+    padding: 13px 18px;
+    border-bottom: 1px solid #EBEBEB;
+    vertical-align: top;
+  }
+
+  .compare-table td:first-child {
+    font-weight: 600;
+    color: var(--obsidian);
+    background: #FAFAF8;
+  }
+
+  .compare-table .bad-cell { color: #C0392B; font-size: 13px; }
+  .compare-table .good-cell { color: #1E7A4A; font-size: 13px; }
+
+  /* ── TECH STACK ── */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .tech-item {
+    border: 1px solid #E8E4DA;
+    background: var(--white);
+    border-radius: 4px;
+    padding: 20px;
+  }
+
+  .tech-item .t-layer {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .tech-item .t-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--obsidian);
+    margin-bottom: 4px;
+  }
+
+  .tech-item .t-desc {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 56px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--gold), rgba(201,168,76,0.1));
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 36px;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+
+  .timeline-phase {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .timeline-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--obsidian);
+    margin-bottom: 8px;
+  }
+
+  .timeline-desc {
+    font-size: 13.5px;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    background: linear-gradient(135deg, #2C2000, #4A3800);
+    padding: 80px 64px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.1) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .cta-inner { position: relative; z-index: 1; }
+
+  .cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .cta-section h2 em { color: var(--gold); font-style: italic; }
+
+  .cta-section p {
+    color: var(--silver);
+    max-width: 540px;
+    margin: 0 auto 40px;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--obsidian);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    padding: 16px 40px;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .cta-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+  }
+
+  /* ── NUMBERED LIST ── */
+  .num-list {
+    list-style: none;
+    margin-bottom: 40px;
+    counter-reset: nl;
+  }
+
+  .num-list li {
+    counter-increment: nl;
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    font-size: 14.5px;
+    color: #333;
+    line-height: 1.7;
+  }
+
+  .num-list li::before {
+    content: counter(nl, decimal-leading-zero);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    min-width: 28px;
+    padding-top: 2px;
+    font-weight: 500;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: linear-gradient(135deg, var(--gold-pale), #FFF8E8);
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin: 32px 0;
+  }
+
+  .highlight-box h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--obsidian);
+    margin-bottom: 10px;
+  }
+
+  .highlight-box p, .highlight-box li {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.75;
+  }
+
+  .highlight-box ul {
+    padding-left: 20px;
+    margin-top: 8px;
+  }
+
+  /* ── PAGE BREAK ── */
+  .page-break { 
+    border: none; 
+    border-top: 3px solid var(--gold-pale); 
+    margin: 64px 0 0;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    background: #2C2000;
+    color: var(--muted);
+    padding: 20px 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-top: 2px solid rgba(201,168,76,0.3);
+  }
+
+  .doc-footer-logo-mark {
+    flex-shrink: 0;
+    opacity: 0.85;
+  }
+
+  .doc-footer-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: #A09070;
+  }
+
+  .doc-footer-company-name {
+    color: var(--gold);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+  }
+
+  .doc-footer-sep {
+    color: rgba(201,168,76,0.35);
+  }
+
+  .doc-footer span { color: var(--gold); }
+
+  /* ── SIGNATURE BLOCK ── */
+  .sig-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 48px;
+    padding-top: 36px;
+    border-top: 1px solid #E8E4DA;
+  }
+  .sig-label {
+    font-family: "DM Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .sig-image-wrap {
+    height: 72px;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 4px;
+  }
+  .sig-image {
+    max-height: 68px;
+    max-width: 220px;
+    object-fit: contain;
+    object-position: left bottom;
+    mix-blend-mode: multiply;
+    filter: contrast(1.1);
+  }
+  .sig-line {
+    width: 100%;
+    height: 1px;
+    background: #C8C2B0;
+    margin-bottom: 10px;
+  }
+  .sig-name {
+    font-family: "Playfair Display", serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--obsidian);
+    margin-bottom: 3px;
+  }
+  .sig-name--blank { height: 22px; }
+  .sig-title { font-size: 12px; color: #666; margin-bottom: 6px; }
+  .sig-date {
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: #999;
+  }
+  @media print { .sig-image { mix-blend-mode: normal; } }
+
+
+  /* ── TYPOGRAPHY ── */
+  h2.body-h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--obsidian);
+    margin-bottom: 12px;
+    margin-top: 32px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #E8E4DA;
+  }
+
+  p.body-p {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.75;
+    margin-bottom: 14px;
+    max-width: 100%;
+  }
+
+  /* ── MINI BADGE ── */
+  .badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    padding: 3px 10px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+
+  .badge-gold { background: var(--gold-pale); color: #8A6820; border: 1px solid rgba(201,168,76,0.5); }
+  .badge-green { background: #E6F5EC; color: #1E7A4A; border: 1px solid #A8D9BC; }
+  .badge-red { background: #FDEEEE; color: #C0392B; border: 1px solid #F5C2C2; }
+  .badge-blue { background: #EAF2FD; color: #2471CC; border: 1px solid #AACFF0; }
+
+  /* Commission highlight */
+  .commission-row {
+    background: linear-gradient(90deg, rgba(201,168,76,0.08), transparent);
+    border-left: 3px solid var(--gold);
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     COVER PAGE
+═══════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-glow"></div>
+  <div class="cover-glow-2"></div>
+
+  <!-- Decorative tower bars -->
+  <div class="cover-tower-visual">
+    <div class="tower-bars">
+      <div class="tower-bar" style="height:60%"></div>
+      <div class="tower-bar" style="height:75%"></div>
+      <div class="tower-bar" style="height:90%"></div>
+      <div class="tower-bar" style="height:100%"></div>
+      <div class="tower-bar" style="height:100%"></div>
+      <div class="tower-bar" style="height:92%"></div>
+      <div class="tower-bar" style="height:80%"></div>
+      <div class="tower-bar" style="height:65%"></div>
+      <div class="tower-bar" style="height:50%"></div>
+      <div class="tower-bar" style="height:40%"></div>
+    </div>
+  </div>
+
+  <div class="cover-header">
+    <div class="cover-logo">
+      <svg width="180" height="44" viewBox="0 0 180 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Icon mark: stacked E + circuit dot motif -->
+        <rect x="0" y="6" width="5" height="32" rx="1.5" fill="#C9A84C"/>
+        <rect x="0" y="6" width="22" height="5" rx="1.5" fill="#C9A84C"/>
+        <rect x="0" y="19.5" width="16" height="5" rx="1.5" fill="#C9A84C"/>
+        <rect x="0" y="33" width="22" height="5" rx="1.5" fill="#C9A84C"/>
+        <!-- circuit dot accent -->
+        <circle cx="28" cy="22" r="3" fill="#E8C97A" opacity="0.7"/>
+        <line x1="31" y1="22" x2="37" y2="22" stroke="#C9A84C" stroke-width="1.5" opacity="0.5"/>
+        <!-- Company name -->
+        <text x="40" y="17" font-family="'DM Mono', 'Courier New', monospace" font-size="11" font-weight="600" letter-spacing="1.5" fill="#C9A84C" text-anchor="start">eSERVICES</text>
+        <text x="40" y="31" font-family="'DM Mono', 'Courier New', monospace" font-size="11" font-weight="400" letter-spacing="1.5" fill="#A08030" text-anchor="start">APPS LTD</text>
+        <!-- tagline -->
+        <text x="40" y="42" font-family="'DM Mono', 'Courier New', monospace" font-size="7" letter-spacing="1" fill="#8A7040" opacity="0.8" text-anchor="start">RC: 1780251 · ABUJA</text>
+      </svg>
+    </div>
+    <div class="cover-badge">Confidential Proposal · 2026</div>
+  </div>
+
+  <div class="cover-body">
+    <div class="cover-eyebrow">Platform Proposal</div>
+    <div class="cover-title">Axari<br><span>TowerLink</span></div>
+    <div class="cover-subtitle">The Unified Digital Operating System for Axari Tower</div>
+    <div class="cover-desc">
+      A comprehensive, revenue-generating digital platform designed to unify every vertical of the Axari Tower mixed-use development — from hotel check-ins and cinema ticketing to tenant management, supermarket commerce, and real-time building operations — into a single, powerful ecosystem.
+    </div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <label>Prepared For</label>
+        <span>Axari Tower Management</span>
+      </div>
+      <div class="cover-meta-item">
+        <label>Location</label>
+        <span>Calabar, Cross River State, Nigeria</span>
+      </div>
+      <div class="cover-meta-item">
+        <label>Development</label>
+        <span>14-Storey Mixed-Use Tower</span>
+      </div>
+      <div class="cover-meta-item">
+        <label>Prepared By</label>
+        <span>eServices Apps Ltd</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-footer-left">AXARI TOWERLINK · PLATFORM PROPOSAL · 2026 — ESERVICES APPS LTD</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     TABLE OF CONTENTS
+═══════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-tag">Contents</div>
+  <h1 class="section-title">Table of <em>Contents</em></h1>
+  <table class="revenue-table" style="font-size:14px;">
+    <tbody>
+      <tr><td style="width:40px;color:var(--gold);font-family:'DM Mono',monospace;">01</td><td><strong>Executive Summary</strong> — Vision, scope, and strategic overview</td></tr>
+      <tr><td style="color:var(--gold);font-family:'DM Mono',monospace;">02</td><td><strong>The Problem</strong> — Operational challenges without a unified platform</td></tr>
+      <tr><td style="color:var(--gold);font-family:'DM Mono',monospace;">03</td><td><strong>The Solution</strong> — What Axari TowerLink solves</td></tr>
+      <tr><td style="color:var(--gold);font-family:'DM Mono',monospace;">04</td><td><strong>Platform Architecture</strong> — Modules, apps & feature breakdown</td></tr>
+      <tr><td style="color:var(--gold);font-family:'DM Mono',monospace;">05</td><td><strong>Monetization & Revenue Streams</strong> — How the tower earns from the platform</td></tr>
+      <tr><td style="color:var(--gold);font-family:'DM Mono',monospace;">06</td><td><strong>Commission Structure</strong> — Per-transaction and SaaS revenue</td></tr>
+      <tr><td style="color:var(--gold);font-family:'DM Mono',monospace;">07</td><td><strong>Before vs. After Comparison</strong> — Impact across all verticals</td></tr>
+      <tr><td style="color:var(--gold);font-family:'DM Mono',monospace;">08</td><td><strong>Technology Stack & Security</strong> — Infrastructure overview</td></tr>
+      <tr><td style="color:var(--gold);font-family:'DM Mono',monospace;">09</td><td><strong>Implementation Roadmap</strong> — Phased delivery plan</td></tr>
+      <tr><td style="color:var(--gold);font-family:'DM Mono',monospace;">10</td><td><strong>Investment & Engagement</strong> — Next steps</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     01 — EXECUTIVE SUMMARY
+═══════════════════════════════════════════ -->
+<div class="dark-section">
+<div class="page">
+  <div class="section-tag">01 · Executive Summary</div>
+  <h1 class="section-title">A Tower This Grand Deserves a Platform <em>to Match</em></h1>
+  <p class="section-intro">
+    Axari Tower is not merely a building — it is a self-contained economic ecosystem. With fourteen floors housing a hotel, short-let apartments, cinema, VR gaming arcade, multi-vendor supermarket, restaurants & food court, retail shops, event and conference centers, office spaces, and more, it requires a digital infrastructure as sophisticated as the physical one.
+  </p>
+
+  <div class="stats-row">
+    <div class="stat-box" style="background:#FFFFFF;border-color:rgba(201,168,76,0.4);">
+      <span class="stat-num">14</span>
+      <div class="stat-label" style="color:#444;">Floors of Operations</div>
+    </div>
+    <div class="stat-box" style="background:#FFFFFF;border-color:rgba(201,168,76,0.4);">
+      <span class="stat-num">10+</span>
+      <div class="stat-label" style="color:#444;">Distinct Business Verticals</div>
+    </div>
+    <div class="stat-box" style="background:#FFFFFF;border-color:rgba(201,168,76,0.4);">
+      <span class="stat-num">1</span>
+      <div class="stat-label" style="color:#444;">Unified Platform — TowerLink</div>
+    </div>
+    <div class="stat-box" style="background:#FFFFFF;border-color:rgba(201,168,76,0.4);">
+      <span class="stat-num">∞</span>
+      <div class="stat-label" style="color:#444;">Revenue Touchpoints</div>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <p>"Axari TowerLink transforms Axari Tower from a collection of independent businesses sharing walls into a cohesive, data-driven revenue machine — where every guest interaction, tenant transaction, and operational decision flows through a single intelligent platform owned and monetised by Axari Tower management."</p>
+  </div>
+
+  <p class="body-p" style="color:#444;">
+    Axari TowerLink is proposed, designed, and delivered by <strong style="color:var(--white);">eServices Apps Ltd</strong> (RC: 1780251), a Nigerian technology company specialising in digital platform solutions for complex, multi-vertical businesses. The platform is built from the ground up for the Nigerian market, with full offline capability, local payment gateway integration (Paystack, Flutterwave), and support for multiple currencies.
+  </p>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     02 — THE PROBLEM
+═══════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-tag">02 · The Problem</div>
+  <h1 class="section-title">What Happens Without <em>TowerLink</em></h1>
+  <p class="section-intro">
+    Without a unified digital operating platform, a multi-vertical building like Axari Tower faces a cascade of operational, financial, and reputational challenges that silently erode revenue and guest experience every single day.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card">
+      <span class="problem-icon">🏨</span>
+      <div class="p-num">PROBLEM · 01</div>
+      <h4>Fragmented Hotel & Apartment Bookings</h4>
+      <p>Reservations are managed through phone calls, WhatsApp, and manual ledgers. Overbookings, missed reservations, and revenue leakage are common. No guest data is captured for repeat marketing.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">🎬</span>
+      <div class="p-num">PROBLEM · 02</div>
+      <h4>No Seat Management for Cinema</h4>
+      <p>Cinema ticketing relies on physical walk-ins. Seats cannot be pre-booked online, peak demand goes unmanaged, and queues deter potential customers. Revenue is uncaptured.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">🕹️</span>
+      <div class="p-num">PROBLEM · 03</div>
+      <h4>VR Arcade Has No Digital Presence</h4>
+      <p>Gaming sessions are sold on a walk-in basis only. No loyalty programmes, no time-slot booking, no digital vouchers, and no cross-promotion with other tower services.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">🛒</span>
+      <div class="p-num">PROBLEM · 04</div>
+      <h4>Supermarket Vendors Operate Independently</h4>
+      <p>Multiple vendors in the supermarket have no common digital checkout, no inventory visibility, no sales reporting for ownership, and no integration with the hotel for in-room ordering.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">🍽️</span>
+      <div class="p-num">PROBLEM · 05</div>
+      <h4>Restaurant Orders Are Paper-Based</h4>
+      <p>Food court and restaurant orders are taken manually, leading to errors, slow service, no data on best-selling items, and missed upselling opportunities for hotel guests.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">🏪</span>
+      <div class="p-num">PROBLEM · 06</div>
+      <h4>Retail Tenant Management Is Manual</h4>
+      <p>Lease agreements, rent collection, service charge levies, and communication with retail tenants are handled via email, phone, and paper — creating disputes, delays, and uncollected income.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">🎪</span>
+      <div class="p-num">PROBLEM · 07</div>
+      <h4>Event Spaces Are Underutilised</h4>
+      <p>Conference and event centre bookings are word-of-mouth. No online calendar, no self-service booking, no automated invoicing, and no ability to upsell catering, AV, or accommodation packages.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">🏢</span>
+      <div class="p-num">PROBLEM · 08</div>
+      <h4>Office Space Occupancy Is Invisible</h4>
+      <p>Hot-desking, co-working, and permanent office tenants are managed with spreadsheets. Underutilised spaces represent significant lost revenue with no real-time occupancy data.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">⚡</span>
+      <div class="p-num">PROBLEM · 09</div>
+      <h4>Building Operations Have No Dashboard</h4>
+      <p>Facility management — power, water, lifts, HVAC, security — is reactive rather than proactive. Issues are reported verbally. No centralised fault-logging, no preventive maintenance scheduling.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">📊</span>
+      <div class="p-num">PROBLEM · 10</div>
+      <h4>Ownership Has No Financial Visibility</h4>
+      <p>Axari Tower owners and investors have no real-time dashboard showing revenue, occupancy, commissions earned, or operational KPIs. Decisions are made on delayed, incomplete information.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">💳</span>
+      <div class="p-num">PROBLEM · 11</div>
+      <h4>No Unified Guest Experience</h4>
+      <p>A hotel guest cannot order from the restaurant, buy cinema tickets, or book the VR arcade from one place. Each vertical is siloed, reducing cross-selling, dwell time, and spend per guest.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">📣</span>
+      <div class="p-num">PROBLEM · 12</div>
+      <h4>Marketing Has No Data Foundation</h4>
+      <p>With no customer data captured centrally, Axari Tower cannot run targeted marketing, loyalty programmes, or personalised promotions — meaning the same guest returns without recognition.</p>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <h4>⚠️ The Compounded Cost of Fragmentation</h4>
+    <p>Each of these 12 problems individually costs revenue, time, or reputation. Together, they represent a systemic failure to monetise the full potential of Axari Tower's physical asset. Conservative estimates suggest that a building of this scale operating without a unified platform loses between 20–40% of its addressable revenue to operational inefficiency, missed upsells, and uncaptured guest spend.</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     03 — THE SOLUTION
+═══════════════════════════════════════════ -->
+<div class="dark-section">
+<div class="page">
+  <div class="section-tag">03 · The Solution</div>
+  <h1 class="section-title">What <em>TowerLink</em> Solves</h1>
+  <p class="section-intro">
+    Axari TowerLink addresses every identified problem with a purpose-built digital module. Each module works independently yet shares data across the platform — creating compounding value at every touchpoint.
+  </p>
+
+  <div class="solution-grid">
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 01</div>
+      <h4>Hotel & Apartment Management System</h4>
+      <p>Real-time room inventory, online booking engine, guest digital check-in/check-out, room service ordering, and loyalty programme. Guest data is captured and marketed to automatically.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 02</div>
+      <h4>Cinema Ticketing & Scheduling</h4>
+      <p>Online seat selection, pre-booking, QR code entry, showtime management, and concession pre-ordering. Dynamic pricing for peak vs. off-peak sessions maximises revenue per screen.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 03</div>
+      <h4>VR Gaming Arcade Platform</h4>
+      <p>Session time-slot booking, digital vouchers, group bookings, loyalty points, and upsell packages. Integration with hotel room service for in-room voucher delivery to guests.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 04</div>
+      <h4>Multi-Vendor Supermarket POS & Marketplace</h4>
+      <p>Unified digital checkout across all vendors, inventory dashboards per vendor, in-building delivery to hotel rooms and offices, and ownership-level sales reporting across all vendors.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 05</div>
+      <h4>Restaurant & Food Court Ordering</h4>
+      <p>Digital table ordering via QR, in-room dining, takeaway pre-ordering, kitchen display system integration, real-time order tracking, and menu management with analytics.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 06</div>
+      <h4>Retail Tenant Management Portal</h4>
+      <p>Digital lease management, automated rent invoicing, service charge billing, maintenance requests, complaints portal, and real-time communication between management and tenants.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 07</div>
+      <h4>Event & Conference Centre Booking</h4>
+      <p>Online self-service booking calendar, floor plan selector, instant quotation engine, package bundling (catering + AV + accommodation), automated invoicing, and event day operations dashboard.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 08</div>
+      <h4>Office & Co-working Space Management</h4>
+      <p>Hot-desk and private office booking, real-time occupancy display, access control integration, billing automation, and meeting room scheduling for office tenants.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 09</div>
+      <h4>Facilities & Building Operations Hub</h4>
+      <p>Centralised fault-logging, preventive maintenance scheduling, utility monitoring, contractor management, SLA tracking, security incident log, and building health dashboard for management.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 10</div>
+      <h4>Owner Intelligence Dashboard</h4>
+      <p>Real-time revenue, occupancy, commission earnings, tenant status, and operational KPIs in one place. Mobile-accessible. Exportable reports for investors and stakeholders.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 11</div>
+      <h4>Axari Guest Super-App</h4>
+      <p>One app for hotel guests, visitors, and shoppers. Book rooms, order food, buy cinema tickets, play VR, shop from the supermarket, and access all tower services in a single, seamless experience.</p>
+    </div>
+    <div class="solution-card">
+      <div class="s-num">SOLUTION · 12</div>
+      <h4>CRM & Loyalty Engine</h4>
+      <p>Unified customer database across all verticals. Loyalty points earned and redeemed across hotel, restaurant, cinema, arcade, and retail. Targeted SMS/email campaigns from one platform.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     04 — PLATFORM ARCHITECTURE
+═══════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-tag">04 · Platform Architecture</div>
+  <h1 class="section-title">The <em>TowerLink</em> Platform</h1>
+  <p class="section-intro">
+    Axari TowerLink is structured as five interconnected user-facing applications — each serving a distinct audience — powered by a shared data backbone, unified payment layer, and central management console.
+  </p>
+
+  <div class="module-list">
+
+    <div class="module-card">
+      <div class="module-left">
+        <div class="module-icon-wrap">🏨</div>
+        <div class="module-name">Axari Guest App</div>
+        <div class="module-tag">Guest-Facing · Public</div>
+      </div>
+      <div class="module-right">
+        <p class="module-desc">The primary touchpoint for hotel guests, short-let residents, visitors, and walk-in customers. A beautiful mobile and web application that gives every person in the building a single key to all its services — from arrival to departure.</p>
+        <div class="feature-pills">
+          <span class="pill">Hotel & Apartment Booking</span>
+          <span class="pill">Digital Check-In / Check-Out</span>
+          <span class="pill">Room Service Ordering</span>
+          <span class="pill">Restaurant & Food Court Ordering</span>
+          <span class="pill">Cinema Ticket Booking</span>
+          <span class="pill">VR Arcade Session Booking</span>
+          <span class="pill">Supermarket Shopping & Delivery</span>
+          <span class="pill">Event Space Enquiry</span>
+          <span class="pill">Loyalty Points Wallet</span>
+          <span class="pill">Push Notifications & Offers</span>
+          <span class="pill">In-App Payment (Card, USSD, Transfer)</span>
+          <span class="pill">QR Code Key & Entry Passes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-left">
+        <div class="module-icon-wrap">🏪</div>
+        <div class="module-name">Axari Tenant Portal</div>
+        <div class="module-tag">Tenant-Facing · Retail & Office</div>
+      </div>
+      <div class="module-right">
+        <p class="module-desc">A dedicated portal for all commercial tenants — retail shop operators, supermarket vendors, restaurant operators, and office tenants. Provides full visibility into their commercial relationship with Axari Tower management.</p>
+        <div class="feature-pills">
+          <span class="pill">Lease Agreement Access</span>
+          <span class="pill">Rent Invoice & Payment History</span>
+          <span class="pill">Service Charge Statements</span>
+          <span class="pill">Sales & Revenue Reporting</span>
+          <span class="pill">Maintenance Request Submission</span>
+          <span class="pill">Notice Board & Announcements</span>
+          <span class="pill">Vendor POS Integration</span>
+          <span class="pill">Supermarket Inventory Dashboard</span>
+          <span class="pill">Commission & Deduction Statements</span>
+          <span class="pill">Document Upload & Management</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-left">
+        <div class="module-icon-wrap">🛠️</div>
+        <div class="module-name">Axari Ops Console</div>
+        <div class="module-tag">Operations · Internal Staff</div>
+      </div>
+      <div class="module-right">
+        <p class="module-desc">The operational nerve centre for all internal staff — housekeeping, security, maintenance, front desk, kitchen staff, cinema operators, and facility managers. Every task, fault, and request is routed, assigned, and tracked here.</p>
+        <div class="feature-pills">
+          <span class="pill">Task Assignment & Tracking</span>
+          <span class="pill">Housekeeping Room Status</span>
+          <span class="pill">Maintenance Fault Ticketing</span>
+          <span class="pill">Security Incident Logging</span>
+          <span class="pill">Staff Shift Management</span>
+          <span class="pill">Utility & Equipment Monitoring</span>
+          <span class="pill">Kitchen Display System</span>
+          <span class="pill">Inventory Alerts</span>
+          <span class="pill">Inter-department Messaging</span>
+          <span class="pill">SLA & Response Time Tracking</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-left">
+        <div class="module-icon-wrap">📊</div>
+        <div class="module-name">Axari Command Dashboard</div>
+        <div class="module-tag">Management · Ownership Level</div>
+      </div>
+      <div class="module-right">
+        <p class="module-desc">The most powerful view in the entire platform — designed exclusively for Axari Tower owners, directors, and investors. Aggregates real-time financial, operational, and commercial intelligence from every corner of the building into one secure, mobile-ready dashboard.</p>
+        <div class="feature-pills">
+          <span class="pill">Live Revenue by Vertical</span>
+          <span class="pill">Commission Earnings Summary</span>
+          <span class="pill">Hotel Occupancy Rate</span>
+          <span class="pill">Tenant Rent Collection Status</span>
+          <span class="pill">Outstanding Debts & Alerts</span>
+          <span class="pill">Platform Transaction Volume</span>
+          <span class="pill">Customer Growth Metrics</span>
+          <span class="pill">Event Pipeline & Revenue Forecast</span>
+          <span class="pill">Operational KPI Heatmap</span>
+          <span class="pill">Exportable Investor Reports</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-left">
+        <div class="module-icon-wrap">👩‍💼</div>
+        <div class="module-name">Axari Staff App</div>
+        <div class="module-tag">Staff · Mobile-First</div>
+      </div>
+      <div class="module-right">
+        <p class="module-desc">A lightweight mobile application for all on-ground staff — from front desk agents and waiters to security guards and cleaners. Enables task completion, communication, and performance tracking without needing a desktop.</p>
+        <div class="feature-pills">
+          <span class="pill">Task Inbox & Checklist</span>
+          <span class="pill">Clock-In / Clock-Out</span>
+          <span class="pill">Room Cleaning Status Updates</span>
+          <span class="pill">Order Delivery Confirmation</span>
+          <span class="pill">Guest Request Fulfilment</span>
+          <span class="pill">Fault Reporting (with photo)</span>
+          <span class="pill">Announcements & Policy Updates</span>
+          <span class="pill">Performance Metrics</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="highlight-box">
+    <h4>🔗 Shared Platform Backbone</h4>
+    <p>All five applications share a common infrastructure: a unified payments layer (Paystack / Flutterwave / bank transfer), a single customer identity & loyalty engine, real-time notifications (push, SMS, email), a reporting and analytics data warehouse, and an API gateway that connects all modules — ensuring data never lives in a silo.</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     05 — MONETISATION
+═══════════════════════════════════════════ -->
+<div class="dark-section">
+<div class="page">
+  <div class="section-tag">05 · Monetisation & Revenue Streams</div>
+  <h1 class="section-title">How <em>Axari</em> Earns from the Platform</h1>
+  <p class="section-intro">
+    Axari TowerLink is not just a cost centre — it is a direct revenue generator. By owning the digital layer of the building, Axari Tower management earns commission, subscription fees, advertising income, and data-driven upsell revenue on every transaction processed through the platform.
+  </p>
+
+  <h2 class="body-h2" style="color:var(--obsidian); border-color:#C9A84C;">Revenue Stream A — Transaction Commissions</h2>
+  <p class="body-p" style="color:#444;">Every booking, order, and purchase processed through TowerLink generates a platform commission payable to Axari Tower management. These are deducted automatically before vendor settlement.</p>
+
+  <table class="revenue-table">
+    <thead>
+      <tr>
+        <th>Business Vertical</th>
+        <th>Transaction Type</th>
+        <th>Commission / Fee</th>
+        <th>Revenue Potential</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="commission-row">
+        <td>Hotel & Short-Let Apartments</td>
+        <td>Room bookings via platform (own inventory)</td>
+        <td>100% of room rate (direct revenue)</td>
+        <td style="color:var(--gold);">Primary Revenue</td>
+      </tr>
+      <tr>
+        <td>Cinema</td>
+        <td>Online ticket sales</td>
+        <td>8–12% platform booking fee per ticket</td>
+        <td style="color:var(--success);">High Volume</td>
+      </tr>
+      <tr class="commission-row">
+        <td>VR Gaming Arcade</td>
+        <td>Session bookings & digital voucher sales</td>
+        <td>10% platform commission</td>
+        <td style="color:var(--success);">Growing</td>
+      </tr>
+      <tr>
+        <td>Multi-Vendor Supermarket</td>
+        <td>All vendor sales processed through unified POS</td>
+        <td>3–5% per vendor transaction + ₦500 monthly vendor SaaS fee</td>
+        <td style="color:var(--success);">Consistent</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Restaurant & Food Court</td>
+        <td>In-room dining, dine-in QR orders, takeaway</td>
+        <td>5–8% on all orders placed via platform</td>
+        <td style="color:var(--success);">Daily Volume</td>
+      </tr>
+      <tr>
+        <td>Retail Tenants</td>
+        <td>Monthly tenant SaaS subscription (portal access)</td>
+        <td>₦15,000–₦50,000/month per tenant (tiered by shop size)</td>
+        <td style="color:var(--success);">Recurring MRR</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Event & Conference Centre</td>
+        <td>Online space bookings & package sales</td>
+        <td>10% platform commission on all confirmed bookings</td>
+        <td style="color:var(--success);">High Value</td>
+      </tr>
+      <tr>
+        <td>Office & Co-working Spaces</td>
+        <td>Hot-desk, private office & meeting room bookings</td>
+        <td>8% commission on all space bookings via platform</td>
+        <td style="color:var(--success);">Recurring</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3">TOTAL ESTIMATED MONTHLY PLATFORM REVENUE (at moderate occupancy)</td>
+        <td>₦3.5M – ₦12M+/month</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <h2 class="body-h2" style="color:var(--obsidian); border-color:#C9A84C;">Revenue Stream B — In-App Advertising & Promotions</h2>
+  <p class="body-p" style="color:#444;">The Axari Guest App becomes a premium advertising channel with a highly targeted captive audience — people physically inside or planning to visit the tower.</p>
+
+  <table class="revenue-table">
+    <thead>
+      <tr>
+        <th>Ad Format</th>
+        <th>Description</th>
+        <th>Pricing Model</th>
+        <th>Estimated Revenue</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Featured Vendor Banner</td>
+        <td>Supermarket vendors or restaurants featured on homepage</td>
+        <td>₦25,000 – ₦80,000/week per slot</td>
+        <td style="color:var(--success);">₦100K – ₦320K/month</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Promoted Cinema Listings</td>
+        <td>Film distributors pay to promote showtimes</td>
+        <td>₦50,000 – ₦150,000 per campaign</td>
+        <td style="color:var(--success);">₦150K – ₦600K/month</td>
+      </tr>
+      <tr>
+        <td>Push Notification Campaigns</td>
+        <td>Tenants pay to send targeted offers to app users</td>
+        <td>₦20,000 per blast (per 1,000 users)</td>
+        <td style="color:var(--success);">₦60K – ₦200K/month</td>
+      </tr>
+      <tr class="commission-row">
+        <td>External Brand Partnerships</td>
+        <td>Banks, telecom, FMCG brands advertising on app</td>
+        <td>₦200,000 – ₦500,000/month per brand</td>
+        <td style="color:var(--success);">₦500K – ₦1.5M/month</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3">ESTIMATED MONTHLY ADVERTISING REVENUE</td>
+        <td>₦810K – ₦2.62M+/month</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <h2 class="body-h2" style="color:var(--obsidian); border-color:#C9A84C;">Revenue Stream C — Data & Intelligence Services</h2>
+  <p class="body-p" style="color:#444;">The platform generates valuable anonymised behavioural and commercial data that can be packaged as premium intelligence services for tenants who want to understand their customers better.</p>
+
+  <table class="revenue-table">
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>Description</th>
+        <th>Revenue Model</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Tenant Analytics Reports</td>
+        <td>Monthly footfall, dwell time, and spend patterns for retail tenants</td>
+        <td>₦30,000 – ₦80,000/month per tenant</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Targeted SMS/Email Marketing</td>
+        <td>Vendors pay to send offers to segmented customer lists</td>
+        <td>₦15,000 – ₦50,000 per campaign</td>
+      </tr>
+      <tr>
+        <td>Market Research Reports</td>
+        <td>Aggregated spending trends in the tower, sold to FMCG/brand partners</td>
+        <td>₦250,000 – ₦1M per report</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 class="body-h2" style="color:var(--obsidian); border-color:#C9A84C;">Revenue Stream D — White-Label Licensing</h2>
+  <p class="body-p" style="color:#444;">Once Axari TowerLink is proven at Axari Tower, eServices Apps Ltd — on behalf of Axari — can license the platform to other mixed-use developments across Nigeria and West Africa, creating a secondary SaaS revenue stream.</p>
+
+  <div class="highlight-box" style="background:#FDF6E3;border-color:rgba(201,168,76,0.5);">
+    <h4 style="color:#8A6400;">🌍 White-Label Opportunity</h4>
+    <p style="color:#444;">Other towers, malls, and mixed-use developments in Lagos, Abuja, Port Harcourt, Accra, and Nairobi face identical operational challenges. A white-label licensing model at ₦2M–₦5M setup fee plus ₦500K–₦1.5M/month SaaS per property represents a significant long-term revenue opportunity for the Axari brand.</p>
+  </div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     06 — COMMISSION STRUCTURE
+═══════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-tag">06 · Detailed Commission Structure</div>
+  <h1 class="section-title">Every Transaction <em>Earns</em> for Axari</h1>
+  <p class="section-intro">
+    The commission and fee structure is designed to be competitive enough that tenants and operators see clear value in the platform, while generating meaningful, compounding revenue for Axari Tower ownership on every transaction.
+  </p>
+
+  <table class="revenue-table">
+    <thead>
+      <tr>
+        <th style="width:22%;">Vertical</th>
+        <th style="width:30%;">Commission/Fee Type</th>
+        <th style="width:24%;">Rate</th>
+        <th>Payable By</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="commission-row">
+        <td>Hotel & Short-Let</td>
+        <td>Platform booking management fee (external OTA bookings routed through system)</td>
+        <td>5% of booking value</td>
+        <td>Hotel Management</td>
+      </tr>
+      <tr>
+        <td>Hotel & Short-Let</td>
+        <td>Upsell commission (room service, add-ons ordered via app)</td>
+        <td>8% of add-on order value</td>
+        <td>Hotel Management</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Cinema</td>
+        <td>Online ticketing service fee</td>
+        <td>₦500 – ₦1,000 per ticket</td>
+        <td>Ticket Buyer</td>
+      </tr>
+      <tr>
+        <td>Cinema</td>
+        <td>Concession pre-ordering commission</td>
+        <td>8% of concession value</td>
+        <td>Cinema Operator</td>
+      </tr>
+      <tr class="commission-row">
+        <td>VR Arcade</td>
+        <td>Session booking platform commission</td>
+        <td>10% per session booking</td>
+        <td>Arcade Operator</td>
+      </tr>
+      <tr>
+        <td>VR Arcade</td>
+        <td>Group booking & voucher commission</td>
+        <td>10% of voucher value</td>
+        <td>Arcade Operator</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Supermarket Vendors</td>
+        <td>POS transaction processing commission</td>
+        <td>3% per transaction</td>
+        <td>Vendor</td>
+      </tr>
+      <tr>
+        <td>Supermarket Vendors</td>
+        <td>Monthly platform subscription</td>
+        <td>₦5,000 – ₦15,000/month per vendor</td>
+        <td>Vendor</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Restaurant / Food Court</td>
+        <td>Digital order commission (dine-in & delivery)</td>
+        <td>6% per order</td>
+        <td>Restaurant Operator</td>
+      </tr>
+      <tr>
+        <td>Restaurant / Food Court</td>
+        <td>Monthly platform subscription</td>
+        <td>₦10,000 – ₦30,000/month</td>
+        <td>Restaurant Operator</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Retail Tenants</td>
+        <td>Tenant portal monthly subscription</td>
+        <td>₦15,000 – ₦50,000/month (tiered)</td>
+        <td>Tenant</td>
+      </tr>
+      <tr>
+        <td>Retail Tenants</td>
+        <td>Automated rent collection processing fee</td>
+        <td>₦1,000 flat per transaction</td>
+        <td>Tenant</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Event & Conference Centre</td>
+        <td>Online booking commission</td>
+        <td>10% of confirmed booking value</td>
+        <td>Event Organiser</td>
+      </tr>
+      <tr>
+        <td>Event & Conference Centre</td>
+        <td>Package upsell commission (catering, AV, rooms)</td>
+        <td>6% of package value</td>
+        <td>Event Organiser</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Office & Co-working</td>
+        <td>Desk / office booking platform commission</td>
+        <td>8% per confirmed booking</td>
+        <td>Space User</td>
+      </tr>
+      <tr>
+        <td>Office & Co-working</td>
+        <td>Meeting room booking fee</td>
+        <td>₦2,000 flat per booking</td>
+        <td>Space User</td>
+      </tr>
+      <tr class="commission-row">
+        <td>All Verticals</td>
+        <td>In-app advertising placements</td>
+        <td>₦20,000 – ₦500,000/campaign</td>
+        <td>Tenants / Brands</td>
+      </tr>
+      <tr>
+        <td>All Verticals</td>
+        <td>Loyalty points redemption processing fee</td>
+        <td>₦100 per redemption event</td>
+        <td>Merchant (redeemer)</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3">PROJECTED ANNUAL PLATFORM COMMISSION & SUBSCRIPTION REVENUE</td>
+        <td>₦50M – ₦150M+/year</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="highlight-box">
+    <h4>💡 Why This Model Works for Tenants Too</h4>
+    <p>The commission rates are calibrated to be significantly below what tenants would spend on independent POS systems, marketing, and digital tools. By joining TowerLink, a supermarket vendor eliminates their standalone POS subscription, gains access to thousands of in-building customers, and benefits from shared marketing — making the 3% commission an exceptional value exchange, not a cost.</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     07 — BEFORE vs AFTER
+═══════════════════════════════════════════ -->
+<div class="dark-section">
+<div class="page">
+  <div class="section-tag">07 · Before vs. After</div>
+  <h1 class="section-title">The <em>Transformation</em> Across Every Vertical</h1>
+  <p class="section-intro">
+    The impact of Axari TowerLink is measurable at every point of operations. This comparison captures the tangible difference between the status quo and the TowerLink-enabled future.
+  </p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th style="width:22%;">Area</th>
+        <th class="bad" style="width:39%;">❌ Without TowerLink</th>
+        <th class="good" style="width:39%;">✅ With TowerLink</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Hotel Bookings</td>
+        <td class="bad-cell">Manual calls & WhatsApp. Overbookings common. No guest records. Revenue lost to untracked walk-ins.</td>
+        <td class="good-cell">Real-time inventory. Online self-booking 24/7. Guest profiles built automatically. Zero overbooking.</td>
+      </tr>
+      <tr>
+        <td>Cinema Revenue</td>
+        <td class="bad-cell">Walk-in only. Empty seats in peak shows. Full house in off-peak goes unnoticed. No data.</td>
+        <td class="good-cell">Online pre-booking fills seats. Dynamic pricing. Concession pre-orders. Data drives programming decisions.</td>
+      </tr>
+      <tr>
+        <td>Restaurant Service</td>
+        <td class="bad-cell">Paper orders. Errors common. Slow service. Hotel guests don't know the restaurant exists.</td>
+        <td class="good-cell">QR table ordering. In-room dining orders via guest app. Kitchen display system. Real-time tracking.</td>
+      </tr>
+      <tr>
+        <td>Supermarket Vendors</td>
+        <td class="bad-cell">Each vendor runs own cash/POS. No unified data. Ownership earns no commission on sales.</td>
+        <td class="good-cell">Unified digital checkout. Ownership earns 3% on every sale. Sales dashboard per vendor. In-room delivery active.</td>
+      </tr>
+      <tr>
+        <td>Tenant Rent Collection</td>
+        <td class="bad-cell">Chasing tenants by phone. Disputes over amounts. Delays in collection. Manual receipts.</td>
+        <td class="good-cell">Automated invoicing. Online payment with instant confirmation. Arrears alerts. Full digital audit trail.</td>
+      </tr>
+      <tr>
+        <td>Event Bookings</td>
+        <td class="bad-cell">Enquiries by word of mouth. No self-service. Manual quoting. Revenue often unrecorded.</td>
+        <td class="good-cell">Self-service booking calendar. Automated quotes. Online deposits. 10% commission auto-captured.</td>
+      </tr>
+      <tr>
+        <td>Facilities Management</td>
+        <td class="bad-cell">Faults reported verbally. No tracking. Repeated issues. Contractors unmanaged. Reactive only.</td>
+        <td class="good-cell">Digital fault ticketing. SLA tracking. Preventive maintenance scheduling. Contractor portal. Proactive alerts.</td>
+      </tr>
+      <tr>
+        <td>Owner Visibility</td>
+        <td class="bad-cell">Financial reports prepared manually weekly. Ownership often unaware of real-time position.</td>
+        <td class="good-cell">Live revenue dashboard on any device. Commission earnings in real time. KPIs at a glance.</td>
+      </tr>
+      <tr>
+        <td>Guest Experience</td>
+        <td class="bad-cell">No integration between services. Guest must visit multiple counters. Loyalty unrewarded.</td>
+        <td class="good-cell">Single app for everything. Cross-vertical loyalty points. Personalised offers. Seamless, premium experience.</td>
+      </tr>
+      <tr>
+        <td>Marketing & CRM</td>
+        <td class="bad-cell">No customer database. No repeat marketing. Guests forgotten after checkout.</td>
+        <td class="good-cell">Unified CRM with full guest history. Targeted SMS/email/push campaigns. Loyalty drives repeat visits.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     08 — TECHNOLOGY
+═══════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-tag">08 · Technology Stack & Security</div>
+  <h1 class="section-title">Built for <em>Nigeria</em>, Built to Last</h1>
+  <p class="section-intro">
+    Axari TowerLink is engineered with a modern, scalable, and resilient technology architecture — fully optimised for the realities of the Nigerian market, including intermittent connectivity, local payment systems, and NDPR data privacy compliance.
+  </p>
+
+  <div class="tech-grid">
+    <div class="tech-item">
+      <div class="t-layer">Frontend</div>
+      <div class="t-name">React Native + Web</div>
+      <div class="t-desc">iOS, Android & web from a single codebase. Offline-first capabilities for low-connectivity environments.</div>
+    </div>
+    <div class="tech-item">
+      <div class="t-layer">Backend</div>
+      <div class="t-name">Node.js / Python API</div>
+      <div class="t-desc">Fast, modular REST & GraphQL APIs powering all five application modules.</div>
+    </div>
+    <div class="tech-item">
+      <div class="t-layer">Database</div>
+      <div class="t-name">PostgreSQL + Redis</div>
+      <div class="t-desc">Relational data integrity with Redis caching for real-time dashboards and notifications.</div>
+    </div>
+    <div class="tech-item">
+      <div class="t-layer">Cloud Infrastructure</div>
+      <div class="t-name">AWS / Azure (NG Region)</div>
+      <div class="t-desc">Cloud-hosted with Nigerian data residency. Auto-scaling during peak events. 99.9% uptime SLA.</div>
+    </div>
+    <div class="tech-item">
+      <div class="t-layer">Payments</div>
+      <div class="t-name">Paystack + Flutterwave</div>
+      <div class="t-desc">Card, bank transfer, USSD, and QR payments. Automatic split payments for vendor commission disbursement.</div>
+    </div>
+    <div class="tech-item">
+      <div class="t-layer">Notifications</div>
+      <div class="t-name">Firebase + Termii SMS</div>
+      <div class="t-desc">Push notifications via Firebase. SMS via Termii for users without the app. WhatsApp Business API integration.</div>
+    </div>
+    <div class="tech-item">
+      <div class="t-layer">Security</div>
+      <div class="t-name">OAuth 2.0 + 2FA + TLS</div>
+      <div class="t-desc">End-to-end encryption. Two-factor authentication for staff and management. Role-based access control.</div>
+    </div>
+    <div class="tech-item">
+      <div class="t-layer">Analytics</div>
+      <div class="t-name">Custom BI + Metabase</div>
+      <div class="t-desc">Real-time dashboards with drill-down capability. Exportable reports in PDF, Excel, and CSV.</div>
+    </div>
+    <div class="tech-item">
+      <div class="t-layer">Compliance</div>
+      <div class="t-name">NDPR / PCI-DSS</div>
+      <div class="t-desc">Full compliance with Nigeria Data Protection Regulation. PCI-DSS compliant payment processing.</div>
+    </div>
+    <div class="tech-item">
+      <div class="t-layer">Integrations</div>
+      <div class="t-name">Open API Layer</div>
+      <div class="t-desc">Pre-built connectors for OTA (Booking.com, Airbnb), QuickBooks accounting, and CCTV/access control systems.</div>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <p>"TowerLink is built on the same technology stack powering Africa's fastest-growing fintech and hospitality platforms — proven at scale, adapted for the unique needs of a 14-storey mixed-use development in Calabar."</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     09 — IMPLEMENTATION ROADMAP
+═══════════════════════════════════════════ -->
+<div class="dark-section">
+<div class="page">
+  <div class="section-tag">09 · Implementation Roadmap</div>
+  <h1 class="section-title">From Contract to <em>Launch</em></h1>
+  <p class="section-intro">
+    Axari TowerLink is delivered in four carefully sequenced phases, ensuring critical revenue-generating modules are live first while the full platform is built, tested, and refined over twelve months.
+  </p>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-phase">Phase 01 · Months 1–3</div>
+      <div class="timeline-title">Foundation & Core Revenue Modules</div>
+      <div class="timeline-desc">
+        Platform architecture setup, cloud infrastructure provisioning, payment gateway integration (Paystack/Flutterwave), and delivery of the highest-revenue-impact modules: <strong style="color:#8A6400;">Hotel & Apartment Booking System</strong>, <strong style="color:#8A6400;">Cinema Ticketing</strong>, <strong style="color:#8A6400;">Restaurant QR Ordering</strong>, and the <strong style="color:#8A6400;">Axari Command Dashboard (Owner View)</strong>. Staff training for front desk, restaurant, and cinema teams. Beta launch with soft rollout to hotel guests.
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-phase">Phase 02 · Months 4–6</div>
+      <div class="timeline-title">Tenant & Vendor Ecosystem</div>
+      <div class="timeline-desc">
+        Onboarding of all retail tenants and supermarket vendors onto the <strong style="color:#8A6400;">Axari Tenant Portal</strong>. Deployment of unified supermarket POS across all vendors. Activation of automated rent invoicing and commission deduction engine. Launch of the <strong style="color:#8A6400;">VR Arcade booking module</strong> and in-app digital vouchers. Full integration of the <strong style="color:#8A6400;">Axari Ops Console</strong> for maintenance and housekeeping teams.
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-phase">Phase 03 · Months 7–9</div>
+      <div class="timeline-title">Event, Office & Intelligence Layer</div>
+      <div class="timeline-desc">
+        Launch of the <strong style="color:#8A6400;">Event & Conference Centre Booking System</strong> with self-service quotation engine. Activation of <strong style="color:#8A6400;">Office & Co-working Space Management</strong>. CRM & loyalty engine goes live — points earning and redemption across all verticals. Tenant analytics reports begin. Full launch of the <strong style="color:#8A6400;">Axari Guest Super-App</strong> on iOS and Android.
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-phase">Phase 04 · Months 10–12</div>
+      <div class="timeline-title">Advertising, Data & Optimisation</div>
+      <div class="timeline-desc">
+        Activation of the <strong style="color:#8A6400;">in-app advertising platform</strong> for tenant and external brand campaigns. Launch of targeted marketing campaigns using CRM data. Advanced analytics and business intelligence reporting for ownership. System performance audit, optimisation, and documentation. Planning begins for potential <strong style="color:#8A6400;">white-label licensing</strong> to other properties. SLA review and platform roadmap for Year 2.
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box" style="background:#FDF6E3;border-color:rgba(201,168,76,0.5);">
+    <h4 style="color:#3D2F00;">🛡️ Ongoing Support & Maintenance</h4>
+    <p style="color:#444;">Post-launch, eServices Apps Ltd provides a dedicated platform support retainer including: 24/7 system monitoring, monthly feature releases, security patching, staff retraining, and a dedicated account manager for Axari Tower management. All platform data remains the exclusive property of Axari Tower.</p>
+  </div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     10 — INVESTMENT & ENGAGEMENT
+═══════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-tag">10 · Investment & Next Steps</div>
+  <h1 class="section-title">A Platform That <em>Pays for Itself</em></h1>
+  <p class="section-intro">
+    The investment in Axari TowerLink is not an operational expense — it is a revenue infrastructure purchase. Based on conservative occupancy and transaction projections, the platform reaches full ROI within the first 12–18 months of full operation, after which it generates sustained net-new revenue for Axari Tower ownership indefinitely.
+  </p>
+
+  <h2 class="body-h2">Investment Summary</h2>
+
+  <table class="revenue-table">
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>Description</th>
+        <th>Investment</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Platform Development (Phase 1–4)</td>
+        <td>All five applications, backend, integrations, and deployment</td>
+        <td>To be scoped (contact us)</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Annual Support & Maintenance Retainer</td>
+        <td>24/7 monitoring, updates, staff training, account management</td>
+        <td>To be scoped (contact us)</td>
+      </tr>
+      <tr>
+        <td>Hardware (if required)</td>
+        <td>QR scanners, kitchen display screens, POS terminals (quoted separately)</td>
+        <td>Vendor-quoted</td>
+      </tr>
+      <tr class="commission-row">
+        <td>Staff Onboarding & Training</td>
+        <td>Included in Phase 1–2 delivery</td>
+        <td>Included</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">PROJECTED ANNUAL PLATFORM-GENERATED REVENUE FOR AXARI (Year 1–2)</td>
+        <td>₦50M – ₦150M+</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="highlight-box">
+    <h4>📞 What Happens Next</h4>
+    <ul>
+      <li><strong>Step 1:</strong> Schedule a discovery call with eServices Apps Ltd to walk through the platform in detail and align on Axari Tower's specific priorities and timeline.</li>
+      <li><strong>Step 2:</strong> A formal scoping session with your management team to document all workflows, existing systems, and integration requirements.</li>
+      <li><strong>Step 3:</strong> eServices Apps Ltd delivers a detailed technical proposal, fixed-price quotation, and project timeline within 5 business days of the scoping session.</li>
+      <li><strong>Step 4:</strong> Contract signing and project kick-off. Phase 1 development begins immediately.</li>
+    </ul>
+  </div>
+
+  <p class="body-p">
+    Axari Tower is poised to be the defining mixed-use landmark in Calabar. Axari TowerLink ensures that the digital experience inside the tower is as exceptional as the physical one — and that every transaction, every booking, and every guest visit generates measurable, trackable, and growing revenue for the owners.
+  </p>
+  <p class="body-p">
+    eServices Apps Ltd brings a singular focus: to build the platform that unlocks the full commercial potential of Axari Tower, for today and for the decades ahead.
+  </p>
+
+  <!-- ═══════════════════════════════════════════
+       SIGNATURE BLOCK
+  ═══════════════════════════════════════════ -->
+  <div class="sig-block">
+    <div class="sig-left">
+      <div class="sig-label">Prepared &amp; Submitted by</div>
+      <div class="sig-image-wrap">
+        <img src="data:image/png;base64,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" alt="Signature" class="sig-image"/>
+      </div>
+      <div class="sig-line"></div>
+      <div class="sig-name">Joshua Omaji</div>
+      <div class="sig-title">Director / CEO — eServices Apps Ltd</div>
+      <div class="sig-date">Date: March 28, 2026</div>
+    </div>
+    <div class="sig-right">
+      <div class="sig-label">Accepted by</div>
+      <div class="sig-image-wrap sig-image-wrap--empty"></div>
+      <div class="sig-line"></div>
+      <div class="sig-name sig-name--blank">&nbsp;</div>
+      <div class="sig-title">Authorised Representative — Axari Tower</div>
+      <div class="sig-date">Date: ___________________________</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     CTA
+═══════════════════════════════════════════ -->
+<div class="cta-section">
+  <div class="cta-inner">
+    <h2>Ready to Build the <em>Future</em> of Axari Tower?</h2>
+    <p>Contact eServices Apps Ltd today to schedule your discovery call and take the first step towards transforming Axari Tower into a digitally-powered revenue ecosystem.</p>
+    <a href="https://wa.me/2348164640101" class="cta-btn">📲 REQUEST A TECHNICAL BRIEF</a>
+    <p style="margin-top:24px; font-size:13px; color:rgba(255,255,255,0.5);">+234 816 464 0101 · eServices Apps Ltd · RC: 1780251 · FCT Abuja, Nigeria</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════ -->
+<div class="doc-footer">
+  <div class="doc-footer-logo-mark">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="2" width="4" height="24" rx="1" fill="#C9A84C" opacity="0.8"/>
+      <rect x="0" y="2" width="16" height="4" rx="1" fill="#C9A84C" opacity="0.8"/>
+      <rect x="0" y="12" width="11" height="4" rx="1" fill="#C9A84C" opacity="0.8"/>
+      <rect x="0" y="22" width="16" height="4" rx="1" fill="#C9A84C" opacity="0.8"/>
+    </svg>
+  </div>
+  <div class="doc-footer-info">
+    <span class="doc-footer-company-name">eServices Apps Ltd</span>
+    <span class="doc-footer-sep">·</span>
+    <span>Plot R21, Nyanya Phase 4, FCT Abuja</span>
+    <span class="doc-footer-sep">·</span>
+    <span>08164640101</span>
+    <span class="doc-footer-sep">·</span>
+    <span>joshuaomaji22@gmail.com</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FLOATING DOWNLOAD BUTTON
+═══════════════════════════════════════════ -->
+<style>
+  .download-fab {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #C9A84C, #E8C97A);
+    color: #1A1000;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 26px;
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(201,168,76,0.45), 0 2px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .download-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(201,168,76,0.55), 0 4px 12px rgba(0,0,0,0.25);
+  }
+  .download-fab:active {
+    transform: translateY(0);
+  }
+  .download-fab svg {
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+  }
+  .download-fab .fab-label { line-height: 1; }
+
+  /* Toast notification */
+  .pdf-toast {
+    position: fixed;
+    bottom: 96px;
+    right: 32px;
+    z-index: 9999;
+    background: #1A1000;
+    color: #E8C97A;
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: 1px solid rgba(201,168,76,0.3);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+  .pdf-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media print {
+    .download-fab, .pdf-toast { display: none !important; }
+  }
+</style>
+
+<button class="download-fab" onclick="downloadPDF()" title="Download as PDF">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3v13M7 11l5 5 5-5"/>
+    <path d="M4 20h16"/>
+  </svg>
+  <span class="fab-label">Download PDF</span>
+</button>
+
+<div class="pdf-toast" id="pdfToast">⏳ Preparing PDF — use your browser's Save as PDF option</div>
+
+<script>
+  function downloadPDF() {
+    const toast = document.getElementById('pdfToast');
+
+    // Show toast
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
+
+    // Set document title so the saved file has a good name
+    const originalTitle = document.title;
+    document.title = 'Axari_TowerLink_Proposal_March2026';
+
+    // Brief delay so toast renders, then trigger print dialog
+    setTimeout(() => {
+      window.print();
+      document.title = originalTitle;
+    }, 300);
+  }
+</script>
+
+<style>
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    html, body { width: 210mm; margin: 0; }
+  }
+</style>
+
+</body>
+</html>
